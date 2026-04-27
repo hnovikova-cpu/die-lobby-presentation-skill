@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json.schemastore.org/brand-kit.json",
+  "version": "1.0.0",
+  "source": "2024-07-09_Styleguide.pdf",
+  "lastUpdated": "2026-04-20",
+  "brand": {
+    "name": "Die Lobby",
+    "tagline": "Raum des kommunikativen Austauschs",
+    "language": "de-DE",
+    "values": [
+      "Innovation und Offenheit",
+      "Qualität und Exzellenz",
+      "Kundenorientierung",
+      "Agilität und kontinuierliche Verbesserung"
+    ],
+    "personality": [
+      "modern",
+      "präzise",
+      "offen",
+      "menschlich",
+      "professionell",
+      "lebendig"
+    ],
+    "description": "Unser Logo steht für die Lobby als Raum des kommunikativen Austauschs und Übergang zwischen Innen und Außen. Es vermittelt Stärke, Modernität, Klarheit und Leichtigkeit."
+  },
+  "colors": {
+    "primary": [
+      {
+        "name": "Neon Romance",
+        "role": "primary",
+        "description": "Helles Rot – kraftvoll und markant, Hauptakzentfarbe",
+        "hex": "#e50040",
+        "rgb": { "r": 229, "g": 0, "b": 64 },
+        "cmyk": { "c": 0, "m": 100, "y": 70, "k": 0 },
+        "pantone": "192 C"
+      },
+      {
+        "name": "Wild Berry",
+        "role": "primary",
+        "description": "Dunkles Rot – tiefer, eleganter Primärton",
+        "hex": "#b2003b",
+        "rgb": { "r": 178, "g": 0, "b": 59 },
+        "cmyk": { "c": 20, "m": 100, "y": 60, "k": 15 },
+        "pantone": "207 C"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "Teal With It",
+        "role": "secondary",
+        "description": "Dunkles Petrol – primäre Überschriftenfarbe",
+        "hex": "#007080",
+        "rgb": { "r": 0, "g": 112, "b": 128 },
+        "cmyk": { "c": 80, "m": 25, "y": 30, "k": 30 },
+        "pantone": "7714 C"
+      },
+      {
+        "name": "Frozen Boubble",
+        "role": "secondary",
+        "description": "Helles Cyan – für Hintergründe und Akzente",
+        "hex": "#00dee0",
+        "rgb": { "r": 0, "g": 222, "b": 224 },
+        "cmyk": { "c": 65, "m": 0, "y": 20, "k": 0 },
+        "pantone": "3115 C"
+      },
+      {
+        "name": "Tennis Ball",
+        "role": "secondary",
+        "description": "Neongelb-Grün – Signalfarbe für Akzente",
+        "hex": "#d4ff4d",
+        "rgb": { "r": 212, "g": 255, "b": 77 },
+        "cmyk": { "c": 25, "m": 0, "y": 75, "k": 0 },
+        "pantone": "380 C"
+      },
+      {
+        "name": "Midnight Dreams",
+        "role": "secondary",
+        "description": "Blauschwarz – Haupttextfarbe und dunkler Hintergrund",
+        "hex": "#001f33",
+        "rgb": { "r": 0, "g": 31, "b": 51 },
+        "cmyk": { "c": 100, "m": 60, "y": 25, "k": 75 },
+        "pantone": "296 C"
+      }
+    ],
+    "neutrals": [
+      {
+        "name": "Black",
+        "role": "neutral",
+        "description": "Nur mit Logo für maximalen Kontrast verwenden",
+        "hex": "#000000",
+        "rgb": { "r": 0, "g": 0, "b": 0 },
+        "cmyk": { "c": 0, "m": 0, "y": 0, "k": 100 },
+        "pantone": "Process Black C"
+      },
+      {
+        "name": "White",
+        "role": "neutral",
+        "description": "Standard-Hintergrundfarbe für klare Lesbarkeit",
+        "hex": "#ffffff",
+        "rgb": { "r": 255, "g": 255, "b": 255 },
+        "cmyk": { "c": 0, "m": 0, "y": 0, "k": 0 },
+        "pantone": null
+      }
+    ],
+    "semantic": {
+      "background": {
+        "default": "#ffffff",
+        "dark": "#001f33",
+        "contrast": "#000000"
+      },
+      "text": {
+        "onLight": "#001f33",
+        "onDark": "#ffffff"
+      },
+      "accent": "#e50040",
+      "accentAlt": "#b2003b",
+      "highlight": "#d4ff4d"
+    },
+    "usageRules": [
+      "Primärfarben (Neon Romance, Wild Berry) vorrangig für Logo und Schlüsselelemente einsetzen.",
+      "Sekundärfarben für Hintergründe, Grafikelemente und Akzente nutzen, um Abwechslung und Tiefe zu schaffen.",
+      "Black ausschließlich mit Logo verwenden, wenn maximaler Kontrast gewünscht ist.",
+      "White bevorzugt als Hintergrundfarbe verwenden.",
+      "Konsistente Farbcodes in digitalen und gedruckten Medien einhalten (Hex, RGB, CMYK, Pantone).",
+      "Ausreichenden Kontrast zwischen Text und Hintergrund sicherstellen."
+    ]
+  },
+  "typography": {
+    "fontFamilies": {
+      "heading": {
+        "family": "Neue Kabel",
+        "weight": "Extrabold",
+        "fallback": ["Futura", "Century Gothic", "Helvetica", "Arial", "sans-serif"],
+        "usage": "Überschriften, Logo-Wortmarke, prominente Textelemente",
+        "character": "kräftig, modern, klar, präzise"
+      },
+      "body": {
+        "family": "Agenda One",
+        "weight": "Medium",
+        "fallback": ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+        "usage": "Fließtext – ausgewogen, gut lesbar",
+        "character": "ausgewogen, klar strukturiert, subtil lebendig"
+      },
+      "bodyEmphasis": {
+        "family": "Agenda One",
+        "weight": "Bold",
+        "fallback": ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
+        "usage": "Textauszeichnungen und Hervorhebungen im Fließtext"
+      }
+    },
+    "colorPairings": {
+      "headings": [
+        { "text": "Teal With It", "background": "White" },
+        { "text": "Teal With It", "background": "Frozen Boubble" },
+        { "text": "Teal With It", "background": "Tennis Ball" },
+        { "text": "Frozen Boubble", "background": "Midnight Dreams" },
+        { "text": "Frozen Boubble", "background": "Black" },
+        { "text": "Neon Romance", "background": "Tennis Ball" }
+      ],
+      "bodyText": [
+        { "text": "Midnight Dreams", "background": "White" },
+        { "text": "Midnight Dreams", "background": "Frozen Boubble" },
+        { "text": "Midnight Dreams", "background": "Tennis Ball" },
+        { "text": "White", "background": "Midnight Dreams" }
+      ]
+    },
+    "rules": [
+      "Hausschriften konsequent in allen Kommunikationsmaterialien einsetzen.",
+      "Größe und Gewichtung an die jeweilige Anwendung anpassen, um visuelle Hierarchie zu unterstützen.",
+      "Ausreichend Leerraum um Textelemente lassen.",
+      "Fließtext auf Midnight Dreams immer in Weiß; auf allen übrigen Farben in Midnight Dreams."
+    ]
+  },
+  "logo": {
+    "description": "Das Logo setzt sich aus einem vorangestellten Signet (Bildmarke), einer Wortmarke und einem optionalen Slogan (Subline) zusammen.",
+    "variants": [
+      {
+        "name": "Bildmarke",
+        "description": "Reduzierte Version (nur Signet) für kompakte Anwendungen"
+      },
+      {
+        "name": "Standardversion",
+        "description": "Bildmarke kombiniert mit Wortmarke – die bevorzugte Variante"
+      },
+      {
+        "name": "Subline",
+        "description": "Standardversion ergänzt um den Slogan"
+      }
+    ],
+    "construction": {
+      "principle": "Geometrisches Konstruktionsprinzip basierend auf der Schrift Neue Kabel",
+      "cornerRadiusRatio": "1:32 (r zur Bildmarke)",
+      "innerRadiusRatio": "1:16 (F/r Verhältnis)"
+    },
+    "allowedBackgrounds": ["#ffffff", "#000000", "#001f33"],
+    "clearSpace": {
+      "description": "Das Logo besitzt einen Schutzraum, der nach Möglichkeit eingehalten werden muss. Der Eckenradius der Hintergrundfläche ist Bestandteil des Logos, sofern die Hintergrundfläche nicht größer als der Schutzraum ist."
+    },
+    "dosAndDonts": {
+      "do": [
+        "Logo nur in den freigegebenen Varianten verwenden.",
+        "Schutzraum einhalten.",
+        "Logo auf Weiß, Schwarz oder Midnight Dreams platzieren oder auf einer Fläche, die zur Schutzraumfarbe kontrastiert/harmoniert."
+      ],
+      "dont": [
+        "Logo nicht verzerren oder strecken.",
+        "Farben des Logos nicht verändern.",
+        "Keine zusätzlichen Elemente zum Logo hinzufügen.",
+        "Logo nicht auf ungeeigneten Hintergründen platzieren."
+      ]
+    }
+  },
+  "designPrinciples": [
+    "Innovation und Offenheit – offene, schwebende Formsprache",
+    "Qualität und Exzellenz – höchste Präzision im Konstruktionsprinzip",
+    "Kundenorientierung – menschliche, dynamische Elemente trotz geometrischer Basis",
+    "Agilität – Leichtigkeit, Freiheit, Bereitschaft zur Veränderung"
+  ],
+  "canva": {
+    "brandColors": [
+      { "name": "Neon Romance", "hex": "#e50040" },
+      { "name": "Wild Berry", "hex": "#b2003b" },
+      { "name": "Teal With It", "hex": "#007080" },
+      { "name": "Frozen Boubble", "hex": "#00dee0" },
+      { "name": "Tennis Ball", "hex": "#d4ff4d" },
+      { "name": "Midnight Dreams", "hex": "#001f33" },
+      { "name": "Black", "hex": "#000000" },
+      { "name": "White", "hex": "#ffffff" }
+    ],
+    "brandFonts": {
+      "heading": "Neue Kabel Extrabold",
+      "subheading": "Neue Kabel Extrabold",
+      "body": "Agenda One Medium",
+      "emphasis": "Agenda One Bold"
+    },
+    "templateDefaults": {
+      "background": "#ffffff",
+      "headingColor": "#007080",
+      "bodyColor": "#001f33",
+      "accentColor": "#e50040"
+    }
+  },
+  "tone_of_voice": {
+    "language": "de-DE",
+    "style": "professionell, modern, menschlich, präzise",
+    "dos": [
+      "Klare, direkte Sprache",
+      "Aktive Formulierungen bevorzugen",
+      "Fachkompetenz zeigen ohne Fachjargon zu übertreiben",
+      "Menschlich und nahbar bleiben"
+    ],
+    "donts": [
+      "Kein übertriebener Marketingsprech",
+      "Keine Passivkonstruktionen ohne Notwendigkeit",
+      "Nicht zu förmlich / kein 'Sie' im Social-Media-Kontext sofern nicht nötig"
+    ]
+  },
+  "tokens": {
+    "color": {
+      "brand": {
+        "neonRomance": "#e50040",
+        "wildBerry": "#b2003b",
+        "tealWithIt": "#007080",
+        "frozenBoubble": "#00dee0",
+        "tennisBall": "#d4ff4d",
+        "midnightDreams": "#001f33",
+        "black": "#000000",
+        "white": "#ffffff"
+      }
+    },
+    "font": {
+      "heading": "'Neue Kabel', Futura, 'Century Gothic', Helvetica, Arial, sans-serif",
+      "body": "'Agenda One', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    },
+    "weight": {
+      "heading": 800,
+      "body": 500,
+      "emphasis": 700
+    }
+  }
+}
