@@ -120,6 +120,8 @@ Full rules in [brand-rules.md](references/brand-rules.md). Core values:
 
 Fonts: **Neue Kabel Extrabold** (headings) · **Agenda One Medium** (body) · **Agenda One Bold** (emphasis)
 
+Text sizing: compact slides (≤5 blocks) → sub-headers **20 pt**, body **18 pt** · dense slides → sub-headers 16–18 pt, body min **15 pt** · hard floor: 15 pt body, 13 pt captions
+
 Slide size: **13.33 × 7.50 inches** (16:9 widescreen)
 
 ---

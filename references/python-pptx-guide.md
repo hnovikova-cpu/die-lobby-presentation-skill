@@ -213,6 +213,70 @@ def add_image(slide, image_path: str, left_in, top_in, width_in, height_in=None)
 
 ---
 
+## Adding Brand Triangles (Die Lobby Decoration)
+
+The reference file (`Samu_Barriererfreiheit.pptx`) defines the exact triangle geometry in the slide master. Always use these values.
+
+```python
+from lxml import etree
+
+P = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+A = 'http://schemas.openxmlformats.org/drawingml/2006/main'
+
+# Exact dimensions from Samu_Barriererfreiheit.pptx master
+TRI_CX, TRI_CY = 3200400, 964692   # EMU
+BR_X,   BR_Y   = 8991600, 5893308  # bottom-right offset, EMU
+
+def make_triangle(shape_id, name, off_x, off_y, cx, cy, color_hex, rot=None, flipV=False):
+    """
+    Top-left:     make_triangle(id, 'Triangle TL', 0, 0, TRI_CX, TRI_CY, 'd4ff4d', flipV=True)
+    Bottom-right: make_triangle(id, 'Triangle BR', BR_X, BR_Y, TRI_CX, TRI_CY, '007080', rot=10800000, flipV=True)
+    Colors: TL = Tennis Ball #d4ff4d, BR = Teal With It #007080
+    """
+    xfrm_attrs = (f' rot="{rot}"' if rot else '') + (' flipV="1"' if flipV else '')
+    xml = f'''<p:sp xmlns:p="{P}" xmlns:a="{A}">
+  <p:nvSpPr>
+    <p:cNvPr id="{shape_id}" name="{name}"/>
+    <p:cNvSpPr/>
+    <p:nvPr userDrawn="1"/>
+  </p:nvSpPr>
+  <p:spPr>
+    <a:xfrm{xfrm_attrs}>
+      <a:off x="{off_x}" y="{off_y}"/>
+      <a:ext cx="{cx}" cy="{cy}"/>
+    </a:xfrm>
+    <a:prstGeom prst="rtTriangle"><a:avLst/></a:prstGeom>
+    <a:solidFill><a:srgbClr val="{color_hex}"/></a:solidFill>
+    <a:ln><a:noFill/></a:ln>
+  </p:spPr>
+  <p:txBody>
+    <a:bodyPr rtlCol="0" anchor="ctr"/>
+    <a:lstStyle/>
+    <a:p><a:pPr algn="ctr"/><a:endParaRPr lang="de-DE" dirty="0"/></a:p>
+  </p:txBody>
+</p:sp>'''
+    return etree.fromstring(xml)
+
+def get_max_id(slide):
+    ids = []
+    for elem in slide.shapes._spTree:
+        pr = elem.find(f'.//{{{P}}}cNvPr')
+        if pr is not None:
+            try: ids.append(int(pr.get('id', 0)))
+            except: pass
+    return max(ids) if ids else 100
+
+def add_brand_triangles(slide):
+    spTree = slide.shapes._spTree
+    base = get_max_id(slide) + 1
+    spTree.insert(0, make_triangle(base,   'Triangle TL', 0,    0,    TRI_CX, TRI_CY, 'd4ff4d', flipV=True))
+    spTree.append(  make_triangle(base+1, 'Triangle BR', BR_X, BR_Y, TRI_CX, TRI_CY, '007080', rot=10800000, flipV=True))
+```
+
+**Critical:** Never add `<a:spLocks>` inside `<p:cNvSpPr>` for non-placeholder shapes — PowerPoint will reject the file and auto-repair it by removing the shapes. The `<p:cNvSpPr/>` must be empty, and `<p:nvPr>` must have `userDrawn="1"`.
+
+---
+
 ## Adding a Colored Rectangle
 
 ```python

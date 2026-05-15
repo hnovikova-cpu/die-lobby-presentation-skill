@@ -100,15 +100,38 @@ def style_body(run, size_pt=16):
     run.font.color.rgb = MIDNIGHT_DREAMS
 ```
 
-### Recommended font sizes
+### Font Sizes — Dynamic by Content Density
 
-| Element | Size |
-|---|---|
-| Cover title | 36–44 pt |
-| Slide title | 24–32 pt |
-| Section heading | 40–48 pt |
-| Body text | 14–18 pt |
-| Captions / footnotes | 10–12 pt |
+Before setting sizes, count visible text blocks per slide:
+- **≤ 5 text blocks → COMPACT layout**
+- **> 5 text blocks → DENSE layout**
+
+| Element | Compact slide | Dense slide | Hard minimum |
+|---|---|---|---|
+| Cover title | 40–44 pt | 36–40 pt | 36 pt |
+| Slide title | 28–32 pt | 24–28 pt | 24 pt |
+| Section heading | 44–48 pt | 40–44 pt | 40 pt |
+| Sub-header / label | **20 pt** | 16–18 pt | 16 pt |
+| Body text | **18 pt** | 15–16 pt | **15 pt** |
+| Footnote / caption | 13 pt | 13 pt | 13 pt |
+
+**Hard rules:**
+- Never set body or label text below **15 pt**
+- Never set footnotes/captions below **13 pt**
+- Sub-headers on compact slides are always **20 pt**
+- Footer (`www.die-lobby.de`), page numbers, emojis — excluded from these rules
+
+**Audit fix pattern:**
+```python
+for run in all_runs:
+    if is_footer(run) or is_page_number(run) or is_emoji(run): continue
+    if run.font.size is None: continue
+    pt = run.font.size.pt
+    if run.font.bold and pt < 20 and pt < 28:   # sub-header
+        run.font.size = Pt(20)
+    elif not run.font.bold and pt < 15:          # body text
+        run.font.size = Pt(15)
+```
 
 ---
 
@@ -119,6 +142,62 @@ def style_body(run, size_pt=16):
 - **White space:** leave breathing room — avoid filling every pixel
 - **Max 3 dominant colors per slide**
 - **Headlines:** max 2 lines, bold, concise
+
+### Content Start X — Critical Alignment Rule
+
+**All content on every slide must start at x = 150 units (1,371,600 EMU / ~1.5 inches).**
+
+This is the single most important layout rule. Confirmed from the reference presentation and user correction across 9 slides.
+
+```python
+CONTENT_LEFT_X = 150        # display units (÷ 9144 from EMU)
+CONTENT_LEFT_EMU = 1371600  # 150 * 9144
+
+# Right margin: keep all content right edge ≤ x=1313 (20px from slide edge)
+CONTENT_RIGHT_MAX = 1313
+SLIDE_WIDTH_UNITS = 1333
+```
+
+**Applies to:**
+- Section number / badge (e.g. "01", "07")
+- Slide title / heading
+- Body text boxes
+- Content card left edges
+- Bottom footnote / question text
+
+**Does NOT apply to:**
+- Footer (`www.die-lobby.de`) — fixed at x=966
+- Page number — fixed at x=1260
+- Right-side decorative emoji/icons — stay at x≥900
+- Triangle decorations — anchored at (0,0) and (983,644)
+
+**When auditing or fixing an existing file:**
+```python
+SKIP_NAMES = {'Triangle TL', 'Triangle BR', '', 'Text 2', 'Text 3'}  # footer/page-num
+CONTENT_LEFT = 150
+
+for elem in slide.shapes._spTree:
+    pr = elem.find(f'.//{{{P}}}cNvPr')
+    if pr is None or pr.get('name','') in SKIP_NAMES: continue
+    xfrm = elem.find(f'.//{{{A}}}xfrm')
+    if xfrm is None: continue
+    off = xfrm.find(f'{{{A}}}off')
+    if off is None: continue
+    x = int(off.get('x')) // 9144
+    if x >= 900: continue  # right-side decorative
+    if x < CONTENT_LEFT:
+        delta = CONTENT_LEFT - x
+        off.set('x', str((x + delta) * 9144))
+```
+
+**After shifting, always check for right-side overflow:**
+```python
+for elem in slide.shapes._spTree:
+    ...
+    right = x + cx
+    if right > CONTENT_RIGHT_MAX:
+        ext.set('cx', str((CONTENT_RIGHT_MAX - x) * 9144))
+```
 
 ---
 

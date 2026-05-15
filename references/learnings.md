@@ -158,3 +158,133 @@ for ph in slide.placeholders:
 **Situation:** Assumed user corrections on slides 13 and 15 were placeholder-only — found nothing in ph_info() diff.
 **Discovery:** User corrections were in custom AUTO_SHAPE and TEXT_BOX elements, not placeholders. Must iterate `slide.shapes` (not just `slide.placeholders`) to find changes.
 **Fix / Rule:** When diffing a _corrected.pptx, always compare all shapes by type+position, not just placeholders.
+
+---
+
+## Entries from 2026-05-15 — Audit & Fix of existing PPTX (lego-ki-workshop)
+
+### 2026-05-15 — Bold detection: font name vs. explicit bold attribute
+**Situation:** Rebranding an existing PPTX where all fonts were `Gill Sans MT Bold`. Tried to detect bold runs via `run.font.bold`.
+**Discovery:** When the original file set bold by choosing a "Bold" font variant (e.g. `Gill Sans MT Bold`) instead of setting `<a:rPr b="1">`, `run.font.bold` returns `None` — not `True`. The bold is encoded in the font name, not the attribute.
+**Fix / Rule:** Always check BOTH `run.font.bold is True` AND `'Bold' in original_font_name`. Capture original font names before making any changes:
+```python
+orig_fonts = {}
+for si, slide in enumerate(prs_orig.slides):
+    for shape in slide.shapes:
+        if not shape.has_text_frame: continue
+        for pi, para in enumerate(shape.text_frame.paragraphs):
+            for ri, run in enumerate(para.runs):
+                orig_fonts[(si, shape.shape_id, pi, ri)] = (run.font.name or '', run.font.bold)
+
+def is_bold(fn_orig, bold_attr):
+    return bold_attr is True or ('Bold' in fn_orig if fn_orig else False)
+```
+
+### 2026-05-15 — Triangle decoration: exact XML format required
+**Situation:** Added `rtTriangle` shapes to slides via raw XML. PowerPoint opened the file with an error and auto-repaired it (removing the triangles).
+**Discovery:** Two issues caused the corruption:
+1. `<a:spLocks noGrp="1"/>` inside `<p:cNvSpPr>` — PowerPoint rejects this for non-placeholder shapes
+2. Missing `userDrawn="1"` attribute on `<p:nvPr>` — required for shapes added programmatically
+**Fix / Rule:** Always use this exact XML template for triangles (mirrors the reference file `Samu_Barriererfreiheit.pptx`):
+```python
+P = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+A = 'http://schemas.openxmlformats.org/drawingml/2006/main'
+
+def make_triangle(shape_id, name, off_x, off_y, cx, cy, color_hex, rot=None, flipV=False):
+    xfrm_attrs = (f' rot="{rot}"' if rot else '') + (' flipV="1"' if flipV else '')
+    xml = f'''<p:sp xmlns:p="{P}" xmlns:a="{A}">
+  <p:nvSpPr>
+    <p:cNvPr id="{shape_id}" name="{name}"/>
+    <p:cNvSpPr/>
+    <p:nvPr userDrawn="1"/>
+  </p:nvSpPr>
+  <p:spPr>
+    <a:xfrm{xfrm_attrs}>
+      <a:off x="{off_x}" y="{off_y}"/>
+      <a:ext cx="{cx}" cy="{cy}"/>
+    </a:xfrm>
+    <a:prstGeom prst="rtTriangle"><a:avLst/></a:prstGeom>
+    <a:solidFill><a:srgbClr val="{color_hex}"/></a:solidFill>
+    <a:ln><a:noFill/></a:ln>
+  </p:spPr>
+  <p:txBody>
+    <a:bodyPr rtlCol="0" anchor="ctr"/>
+    <a:lstStyle/>
+    <a:p><a:pPr algn="ctr"/><a:endParaRPr lang="de-DE" dirty="0"/></a:p>
+  </p:txBody>
+</p:sp>'''
+    from lxml import etree
+    return etree.fromstring(xml)
+```
+
+### 2026-05-15 — Die Lobby triangle decoration: exact dimensions and colors
+**Situation:** Needed to match the triangle decorations from the official template (`Samu_Barriererfreiheit.pptx` master).
+**Discovery:** Exact values extracted from the slide master XML:
+- **Top-left triangle:** `rtTriangle`, `flipV="1"`, pos=(0,0), size=3200400×964692 EMU, color = **Tennis Ball `#d4ff4d`**
+- **Bottom-right triangle:** `rtTriangle`, `rot="10800000" flipV="1"`, pos=(8991600, 5893308), same size, color = **Teal With It `#007080`**
+**Fix / Rule:** Always use these exact values. Insert TL at index 0 of spTree (behind all content), append BR at the end. Use `get_max_id(slide) + 1` for shape IDs to avoid duplicates:
+```python
+TRI_CX, TRI_CY = 3200400, 964692
+BR_X, BR_Y = 8991600, 5893308
+
+def get_max_id(slide):
+    P = 'http://schemas.openxmlformats.org/presentationml/2006/main'
+    ids = []
+    for elem in slide.shapes._spTree:
+        pr = elem.find(f'.//{{{P}}}cNvPr')
+        if pr is not None:
+            try: ids.append(int(pr.get('id', 0)))
+            except: pass
+    return max(ids) if ids else 100
+
+# Add to each slide:
+base = get_max_id(slide) + 1
+spTree.insert(0, make_triangle(base,   'Triangle TL', 0,    0,    TRI_CX, TRI_CY, 'd4ff4d', flipV=True))
+spTree.append(  make_triangle(base+1, 'Triangle BR', BR_X, BR_Y, TRI_CX, TRI_CY, '007080', rot=10800000, flipV=True))
+```
+
+### 2026-05-15 — Text size depends on content density; 15pt hard minimum
+**Situation:** The lego-ki-workshop presentation has compact slides (few items per slide), while earlier presentations were denser. Original fonts were 11–18pt with no consistent rule.
+**Discovery:** Sub-headers (bold labels like "Aufgabe:", "Warm-Up") should be 20pt on compact slides. 15pt is the hard minimum for all body text. Footnotes/captions minimum is 13pt. Never apply these rules to footer text, page numbers, or emoji runs.
+**Fix / Rule:** Count text blocks per slide. ≤5 = compact → sub-headers 20pt, body 18pt. >5 = dense → sub-headers 16–18pt, body min 15pt. See `brand-rules.md` → "Font Sizes — Dynamic by Content Density" for the audit fix pattern.
+
+### 2026-05-15 — Content left alignment: all slides must start at x=150
+**Situation:** Slides 3–9 had content starting at x=40–50 while slides 1&2 started at x=150.
+**Discovery:** x=150 is the canonical left content margin for Die Lobby presentations. It must be consistent across every slide. Right-side decorative elements (emoji icons at x≥900), footer (x=966), and page number (x=1260) are excluded. After shifting, always check right-side overflow (max content right edge = x=1313).
+**Fix / Rule:** See `brand-rules.md` → "Content Start X — Critical Alignment Rule" for the exact audit/fix code. Apply this check as part of every Workflow C (audit) and Workflow A (create) run.
+
+### 2026-05-15 — Validate PPTX XML before considering done
+**Situation:** Saved a PPTX that python-pptx loaded fine, but PowerPoint reported an error.
+**Discovery:** python-pptx's parser is more lenient than PowerPoint's. A file can be "valid" in python-pptx but still fail in PowerPoint due to bad shape attributes.
+**Fix / Rule:** After every save, always validate the full ZIP contents:
+```python
+import os
+from lxml import etree
+
+def validate_pptx(path):
+    import zipfile
+    errors = []
+    with zipfile.ZipFile(path) as z:
+        for name in z.namelist():
+            if name.endswith('.xml') or name.endswith('.rels'):
+                try: etree.fromstring(z.read(name))
+                except Exception as e: errors.append(f'{name}: {e}')
+    # Also check for duplicate shape IDs per slide
+    with zipfile.ZipFile(path) as z:
+        for name in z.namelist():
+            if name.startswith('ppt/slides/slide') and name.endswith('.xml'):
+                tree = etree.fromstring(z.read(name))
+                ids = [el.get('id') for el in tree.iter() if el.tag.endswith('}cNvPr') and el.get('id')]
+                dupes = {x for x in ids if ids.count(x) > 1}
+                if dupes: errors.append(f'{name}: duplicate IDs {dupes}')
+    return errors  # empty = clean
+```
+
+### 2026-05-15 — PowerPoint auto-repair removes unknown/corrupt shapes
+**Situation:** PowerPoint opened the branded file with a repair dialog and removed the Triangle BR shapes from slides 1–9.
+**Discovery:** When PowerPoint auto-repairs a file, it saves a `*_Repariert.pptx` (macOS German UI) or `*_Repaired.pptx` (English UI) in the same folder. The repaired file is the user's working version — always use it as the new base.
+**Fix / Rule:** When user reports a PowerPoint error + provides a `_Repariert` file:
+1. Use the `_Repariert` file as the new source
+2. Inspect what was removed (compare shape lists)
+3. Re-add only the missing elements — do not re-apply all fixes
+4. Re-validate before saving
