@@ -83,22 +83,40 @@ FONT_FALLBACK_BODY    = ['Helvetica Neue', 'Helvetica', 'Arial']
 
 ### Applying fonts in python-pptx
 
+**Always pass `on_dark=True` when the slide background is Midnight Dreams.**
+
 ```python
 from pptx.util import Pt
-from pptx.enum.text import PP_ALIGN
 
-def style_heading(run, size_pt=28):
+def style_heading(run, size_pt=28, on_dark=False):
     run.font.name = 'Neue Kabel'
     run.font.bold = True
     run.font.size = Pt(size_pt)
-    run.font.color.rgb = TEAL_WITH_IT
+    run.font.color.rgb = FROZEN_BOUBBLE if on_dark else TEAL_WITH_IT
 
-def style_body(run, size_pt=16):
+def style_body(run, size_pt=16, on_dark=False):
     run.font.name = 'Agenda One'
     run.font.bold = False
     run.font.size = Pt(size_pt)
-    run.font.color.rgb = MIDNIGHT_DREAMS
+    run.font.color.rgb = WHITE if on_dark else MIDNIGHT_DREAMS
+
+def set_dark_bg(slide):
+    """Set slide background to Midnight Dreams. Call before writing any text."""
+    fill = slide.background.fill
+    fill.solid()
+    fill.fore_color.rgb = MIDNIGHT_DREAMS
 ```
+
+**Contrast quick-reference — before writing ANY text, pick the right pair:**
+
+| Slide background | `on_dark` | Heading color | Body color |
+|---|---|---|---|
+| White `#ffffff` | `False` | Teal With It `#007080` | Midnight Dreams `#001f33` |
+| Midnight Dreams `#001f33` | `True` | Frozen Boubble `#00dee0` | White `#ffffff` |
+| Frozen Boubble `#00dee0` | `False` | Midnight Dreams `#001f33` | Midnight Dreams `#001f33` |
+| Tennis Ball `#d4ff4d` | `False` | Midnight Dreams `#001f33` | Midnight Dreams `#001f33` |
+
+**Rule:** Never put Midnight Dreams text on a Midnight Dreams background — it's invisible. Never put White text on a White background. When in doubt, set `on_dark` based on whether `set_dark_bg()` was called on that slide.
 
 ### Font Sizes — Dynamic by Content Density
 
